@@ -1,8 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-#
-#
-#
 # Copyright (c) 2019 University of Dundee.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -20,6 +16,7 @@
 
 
 from django.apps import AppConfig
+
 from . import oauth_settings  # noqa
 
 

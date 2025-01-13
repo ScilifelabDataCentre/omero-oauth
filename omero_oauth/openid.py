@@ -1,14 +1,14 @@
 import codecs
-from cryptography.hazmat.primitives.asymmetric.rsa import RSAPublicNumbers
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import serialization
 from datetime import datetime
 from email.utils import parsedate
-import jwt
-from jwt.utils import base64url_decode
-import requests
 from time import mktime
 
+import jwt
+import requests
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric.rsa import RSAPublicNumbers
+from jwt.utils import base64url_decode
 
 # Cache of openid discovery responses
 _DISCOVERY_CACHE = {}
@@ -28,7 +28,7 @@ def _cache_get(url):
     r = requests.get(url)
     r.raise_for_status()
     obj = r.json()
-    httpexpiry = r.headers.get('expires')
+    httpexpiry = r.headers.get("expires")
     if httpexpiry:
         expiry = mktime(parsedate(httpexpiry))
     else:
@@ -49,12 +49,11 @@ def openid_connect_discover(issuer):
     :return dict: The openid connect server information
     """
     if not issuer:
-        raise AuthException('No issuer provided')
+        raise AuthException("No issuer provided")
     try:
-        autoconfig = _cache_get(
-            '{}/.well-known/openid-configuration'.format(issuer))
+        autoconfig = _cache_get("{}/.well-known/openid-configuration".format(issuer))
     except Exception as e:
-        raise AuthException('OpenID discovery failed: {}'.format(e))
+        raise AuthException("OpenID discovery failed: {}".format(e))
     return autoconfig
 
 
@@ -66,9 +65,9 @@ def openid_connect_urls(issuer):
     """
     autoconfig = openid_connect_discover(issuer)
     return (
-        autoconfig['authorization_endpoint'],
-        autoconfig['token_endpoint'],
-        autoconfig['userinfo_endpoint'],
+        autoconfig["authorization_endpoint"],
+        autoconfig["token_endpoint"],
+        autoconfig["userinfo_endpoint"],
     )
 
 
@@ -95,21 +94,23 @@ def jwt_token_verify(id_token, client_id, issuer, autoconfig=None, jwk=None):
         header = jwt.get_unverified_header(id_token)
         if not autoconfig:
             autoconfig = openid_connect_discover(issuer)
-        jwks = _cache_get(autoconfig['jwks_uri'])
-        for jwk in jwks['keys']:
-            if jwk['kid'] == header['kid']:
+        jwks = _cache_get(autoconfig["jwks_uri"])
+        for jwk in jwks["keys"]:
+            if jwk["kid"] == header["kid"]:
                 break
     if not jwk:
-        raise Exception('Failed to get public key for {}'.format(issuer))
+        raise Exception("Failed to get public key for {}".format(issuer))
 
-    e = int(codecs.encode(base64url_decode(jwk['e']), 'hex'), 16)
-    n = int(codecs.encode(base64url_decode(jwk['n']), 'hex'), 16)
+    e = int(codecs.encode(base64url_decode(jwk["e"]), "hex"), 16)
+    n = int(codecs.encode(base64url_decode(jwk["n"]), "hex"), 16)
     public_key = RSAPublicNumbers(e, n).public_key(backend=default_backend())
     pem = public_key.public_bytes(
         encoding=serialization.Encoding.PEM,
-        format=serialization.PublicFormat.SubjectPublicKeyInfo)
-    d = jwt.decode(id_token, key=pem, algorithms=jwk['alg'],
-                   audience=client_id, issuer=issuer)
+        format=serialization.PublicFormat.SubjectPublicKeyInfo,
+    )
+    d = jwt.decode(
+        id_token, key=pem, algorithms=jwk["alg"], audience=client_id, issuer=issuer
+    )
     return d
 
 
