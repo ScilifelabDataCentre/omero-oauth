@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-#
 # Copyright (c) 2019 University of Dundee.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -15,10 +13,10 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
 
 import os
-from setuptools import setup, find_packages
+
+from setuptools import find_packages, setup
 
 
 # Utility function to read the README file.
@@ -29,38 +27,41 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 
-VERSION = '0.1.0'
+VERSION = "0.1.1"
 
 
-setup(name="omero-oauth",
-      packages=find_packages(exclude=['ez_setup']),
-      version=VERSION,
-      description="OMERO.web OAuth2 and openid-connect plugin",
-      long_description=read('README.rst'),
-      install_requires=[
-          'cryptography',
-          'jsonschema>=3,<4',
-          'pyjwt',
-          'requests_oauthlib>=1.2.0',
-      ],
-      classifiers=[
-          'Environment :: Web Environment',
-          'Framework :: Django',
-          'Intended Audience :: Developers',
-          'Natural Language :: English',
-          'Operating System :: OS Independent',
-          'Programming Language :: Python :: 2',
-          'Topic :: Internet :: WWW/HTTP',
-          'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
-          'Topic :: Internet :: WWW/HTTP :: WSGI',
-      ],  # Get strings from
-          # http://pypi.python.org/pypi?%3Aaction=list_classifiers
-      author='The Open Microscopy Team',
-      author_email='ome-devel@lists.openmicroscopy.org.uk',
-      license='AGPL-3.0',
-      url="https://gitlab.com/openmicroscopy/incubator/omero-oauth",
-      download_url='https://gitlab.com/openmicroscopy/incubator/omero-oauth/-/archive/v{version}/omero-signup-v{version}.tar.gz'.format(version=VERSION),  # NOQA
-      keywords=['OMERO.web', 'plugin'],
-      include_package_data=True,
-      zip_safe=False,
-      )
+setup(
+    name="omero-oauth",
+    packages=find_packages(exclude=["ez_setup"]),
+    version=VERSION,
+    description="OMERO.web OAuth2 and openid-connect plugin",
+    long_description=read("README.rst"),
+    install_requires=[
+        "cryptography",
+        "jsonschema>=3,<4",
+        "pyjwt",
+        "requests_oauthlib>=1.2.0",
+    ],
+    classifiers=[
+        "Environment :: Web Environment",
+        "Framework :: Django",
+        "Intended Audience :: Developers",
+        "Natural Language :: English",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python :: 3",
+        "Topic :: Internet :: WWW/HTTP",
+        "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+        "Topic :: Internet :: WWW/HTTP :: WSGI",
+    ],  # Get strings from
+    # http://pypi.python.org/pypi?%3Aaction=list_classifiers
+    author="The Open Microscopy Team",
+    author_email="ome-devel@lists.openmicroscopy.org.uk",
+    license="AGPL-3.0",
+    url="https://gitlab.com/openmicroscopy/incubator/omero-oauth",
+    download_url="https://gitlab.com/openmicroscopy/incubator/omero-oauth/-/archive/v{version}/omero-signup-v{version}.tar.gz".format(
+        version=VERSION
+    ),  # NOQA
+    keywords=["OMERO.web", "plugin"],
+    include_package_data=True,
+    zip_safe=False,
+)
