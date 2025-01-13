@@ -1,0 +1,120 @@
+---
+providers:
+  ######################################################################
+  # Google OpenID
+  - name: google
+    displayname: Google
+    url:
+      # These 3 URLs will be found using OpenID discovery, uncomment to override
+      # authorisation: https://accounts.google.com/o/oauth2/v2/auth
+      # token:  https://oauth2.googleapis.com/token
+      # userinfo: https://openidconnect.googleapis.com/v1/userinfo
+      callback: https://omero.scilifelab.se/oauth/callback/google
+
+    # https://console.developers.google.com/apis/credentials
+    client:
+      id:
+      secret:
+      scopes:
+        - openid
+        - https://www.googleapis.com/auth/userinfo.email
+        - https://www.googleapis.com/auth/userinfo.profile
+
+    openid:
+      # OpenID issuer, required for auto-discovery
+      issuer: https://accounts.google.com
+      # Uncomment to enable verification
+      # verify: true
+
+    # force to always make user click authorize
+    authorization:
+      params:
+        prompt: select_account
+
+    userinfo:
+      type: openid
+
+    user:
+      # OMERO user name, template must contain {sub}
+      name: 'google-{sub}'
+      email: '{email}'
+      firstname: '{given_name}'
+      lastname: '{family_name}'
+
+  ######################################################################
+  # GitHub
+  - name: github
+    displayname: GitHub
+    url:
+      authorisation: https://github.com/login/oauth/authorize
+      token: https://github.com/login/oauth/access_token
+      userinfo: https://api.github.com/user
+      callback: https://omero.scilifelab.se/oauth/callback/github
+
+    # Create an OAuth app: https://github.com/settings/developers
+    client:
+      id:
+      secret:
+      scopes:
+        # Needs to exactly match the string returned by GitHub
+        - 'read:user,user:email'
+
+    userinfo:
+      type: github
+
+    user:
+      # OMERO user name, template must contain {login}
+      name: 'github-{login}'
+
+
+  ######################################################################
+  # ORCID
+  - name: orcid
+    displayname: ORCID
+    url:
+      authorisation: https://orcid.org/oauth/authorize
+      token: https://orcid.org/oauth/token
+      userinfo: https://pub.orcid.org/v2.1/{orcid}
+      callback: https://omero.scilifelab.se/oauth/callback/orcid
+
+    # https://info.orcid.org/documentation/integration-guide/registering-a-public-api-client/
+    client:
+      id:
+      secret:
+      scopes:
+        - /authenticate
+
+    userinfo:
+      type: orcid
+
+    user:
+      name: 'orcid-{orcid}'
+
+  ######################################################################
+  # Keycloak
+  - name: keycloak
+    displayname: Keycloak
+    url:
+      callback: https://omero.scilifelab.se/oauth/callback/keycloak
+
+    # Keycloak client configuration
+    client:
+      id:
+      secret:
+      scopes:
+        - openid
+        - profile
+        - email
+
+    openid:
+      # TOOD: check the realm name and URL
+      issuer: https://omero.scilifelab.se/oauth/realms/<realm-name>
+
+    userinfo:
+      type: openid
+
+    user:
+      name: '{preferred_username}'
+      email: '{email}'
+      firstname: '{given_name}'
+      lastname: '{family_name}'
