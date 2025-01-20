@@ -130,7 +130,7 @@ class OauthProvider(object):
     def userinfo_keycloak(self, token, userinfo_url):
         # Retrieve user information from Keycloak userinfo endpoint
         response = self.oauth.get(
-            userinfo_url, headers={"Authorization": f"Bearer {token['access_token']}"}
+            userinfo_url, headers={"Authorization": f"Bearer {token}"}
         )
 
         if response.status_code != 200:
