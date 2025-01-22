@@ -2,7 +2,7 @@ FROM openmicroscopy/omero-web-standalone:5.27.2
 
 USER root
 
-COPY . /opt/omero/
+COPY . /opt/omero/omero-oauth
 
 WORKDIR /opt/omero/omero-oauth
 
