@@ -4,7 +4,7 @@
 
 Installing in our omero instance
 --------------------------------
-1. In VM, go to omero-web docker as root and clothe the repository in ``/opt/omero/``
+1. In VM, go to omero-web docker as root and clone the repository in ``/opt/omero/``
 2. Still in ``/opt/omero/`` activate omero CLI source ``/opt/omero/web/venv3/bin/activate``
 3. Install omero-oauth ``python /opt/omero/omero-oauth/setup.py install``
 4. Exit as root and load in docker as user
