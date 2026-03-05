@@ -1,0 +1,29 @@
+---
+providers:
+  ######################################################################
+  # Keycloak
+  - name: keycloak
+    displayname: Keycloak
+    url:
+      callback: https://<OMERO_HOST>/oauth/callback/keycloak
+
+    # Keycloak client configuration
+    client:
+      id: <KEYCLOAK_CLIENT_ID>
+      secret: <KEYCLOAK_CLIENT_SECRET>
+      scopes:
+        - openid
+        - profile
+        - email
+
+    openid:
+      issuer: https://<KEYCLOAK_ISSUER>/oauth/realms/omero/protocol/openid-connect/auth
+
+    userinfo:
+      type: openid
+
+    user:
+      name: '{preferred_username}'
+      email: '{email}'
+      firstname: '{given_name}'
+      lastname: '{family_name}'

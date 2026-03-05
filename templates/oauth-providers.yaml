@@ -66,7 +66,6 @@ providers:
       # OMERO user name, template must contain {login}
       name: 'github-{login}'
 
-
   ######################################################################
   # ORCID
   - name: orcid
@@ -99,16 +98,15 @@ providers:
 
     # Keycloak client configuration
     client:
-      id:
-      secret:
+      id: omero-oauth
+      secret: NrWU8m7QY-THISISAFAKESECRET-m7GauvfhcRIA7
       scopes:
         - openid
         - profile
         - email
 
     openid:
-      # TOOD: check the realm name and URL
-      issuer: https://omero.scilifelab.se/oauth/realms/<realm-name>
+      issuer: https://omero.scilifelab.se/oauth/realms/omero/protocol/openid-connect/auth
 
     userinfo:
       type: openid
@@ -118,3 +116,4 @@ providers:
       email: '{email}'
       firstname: '{given_name}'
       lastname: '{family_name}'
+
