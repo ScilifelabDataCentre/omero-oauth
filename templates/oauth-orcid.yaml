@@ -1,0 +1,24 @@
+---
+providers:
+  ######################################################################
+  # ORCID
+  - name: orcid
+    displayname: ORCID
+    url:
+      authorisation: https://orcid.org/oauth/authorize
+      token: https://orcid.org/oauth/token
+      userinfo: https://pub.orcid.org/v2.1/{orcid}
+      callback: https://<OMERO_HOST>/oauth/callback/orcid
+
+    # https://info.orcid.org/documentation/integration-guide/registering-a-public-api-client/
+    client:
+      id:
+      secret:
+      scopes:
+        - /authenticate
+
+    userinfo:
+      type: orcid
+
+    user:
+      name: 'orcid-{orcid}'

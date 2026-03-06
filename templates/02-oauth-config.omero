@@ -1,0 +1,14 @@
+config append omero.web.apps '"omero_oauth"'
+
+config set omero.web.oauth.host localhost
+config set omero.web.oauth.admin.user root
+config set omero.web.oauth.admin.password omero
+
+config set omero.web.oauth.group.name oauth
+config set omero.web.oauth.providers /opt/omero/web/config/oauth-keycloak.yaml
+
+# Change the default login page to oauth
+# config set omero.web.login_view oauth_index
+
+# Enable sessions tokens for OMERO clients
+config set omero.web.oauth.sessiontoken.enable true

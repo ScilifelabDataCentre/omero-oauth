@@ -1,15 +1,16 @@
 import json
 import sys
+from pkgutil import get_data
+
 import yaml
 from jsonschema import Draft7Validator
-from pkgutil import get_data
 from omeroweb.settings import process_custom_settings, report_settings
 
 
 def str_not_empty(o):
     s = str(o)
     if not o or not s:
-        raise ValueError('Invalid empty value')
+        raise ValueError("Invalid empty value")
     return s
 
 
@@ -44,54 +45,47 @@ def oauth_provider_config(o):
     except ValueError:
         cfgfile = o
         with open(cfgfile) as f:
-            if cfgfile.endswith('.yml') or cfgfile.endswith('.yaml'):
+            if cfgfile.endswith(".yml") or cfgfile.endswith(".yaml"):
                 cfg = yaml.load(f, Loader=yaml.FullLoader)
             else:
                 cfg = json.load(f, Loader=yaml.FullLoader)
-    schemastr = get_data('omero_oauth', 'schema/provider-schema.yaml')
+    schemastr = get_data("omero_oauth", "schema/provider-schema.yaml")
     schema = yaml.load(schemastr, Loader=yaml.FullLoader)
     v = Draft7Validator(schema)
     if not v.is_valid(cfg):
-        errs = '\n\n** '.join(
-            ['Invalid provider configuration'] +
-            ['\n\n'.join(str(e) for e in v.iter_errors(cfg))])
+        errs = "\n\n** ".join(
+            ["Invalid provider configuration"]
+            + ["\n\n".join(str(e) for e in v.iter_errors(cfg))]
+        )
         raise ValueError(errs)
     return cfg
 
 
 # load settings
 OAUTH_SETTINGS_MAPPING = {
-    'omero.web.oauth.providers':
-        ['OAUTH_PROVIDERS', '{}', oauth_provider_config, None],
-
-    'omero.web.oauth.display.name':
-        ['OAUTH_DISPLAY_NAME', 'OAuth Client', str, None],
-    # 'omero.web.oauth.baseurl':
-    #     ['OAUTH_BASEURL', None, str_not_empty, None],
-
-    'omero.web.oauth.host':
-        ['OAUTH_HOST', '', str_not_empty, None],
-    'omero.web.oauth.port':
-        ['OAUTH_PORT', 4064, int, None],
-    'omero.web.oauth.admin.user':
-        ['OAUTH_ADMIN_USERNAME', '', str_not_empty, None],
-    'omero.web.oauth.admin.password':
-        ['OAUTH_ADMIN_PASSWORD', '', str_not_empty, None],
-
-    'omero.web.oauth.user.timeout':
-        ['OAUTH_USER_TIMEOUT', 86400, int, None],
-
-    'omero.web.oauth.group.name':
-        ['OAUTH_GROUP_NAME', '', str_not_empty, None],
-    'omero.web.oauth.group.templatetime':
-        ['OAUTH_GROUP_NAME_TEMPLATETIME', False, bool, None],
-    'omero.web.oauth.group.perms':
-        ['OAUTH_GROUP_PERMS', 'rw----', str_not_empty, None],
-
-    'omero.web.oauth.sessiontoken.enable':
-        ['OAUTH_SESSIONTOKEN_ENABLE', False, bool, None],
+    "omero.web.oauth.providers": ["OAUTH_PROVIDERS", "{}", oauth_provider_config, None],
+    "omero.web.oauth.display.name": ["OAUTH_DISPLAY_NAME", "OAuth Client", str, None],
+    "omero.web.oauth.host": ["OAUTH_HOST", "", str_not_empty, None],
+    "omero.web.oauth.port": ["OAUTH_PORT", 4064, int, None],
+    "omero.web.oauth.admin.user": ["OAUTH_ADMIN_USERNAME", "", str_not_empty, None],
+    "omero.web.oauth.admin.password": ["OAUTH_ADMIN_PASSWORD", "", str_not_empty, None],
+    "omero.web.oauth.user.timeout": ["OAUTH_USER_TIMEOUT", 86400, int, None],
+    "omero.web.oauth.group.name": ["OAUTH_GROUP_NAME", "", str_not_empty, None],
+    "omero.web.oauth.group.templatetime": [
+        "OAUTH_GROUP_NAME_TEMPLATETIME",
+        False,
+        bool,
+        None,
+    ],
+    "omero.web.oauth.group.perms": ["OAUTH_GROUP_PERMS", "rw----", str_not_empty, None],
+    "omero.web.oauth.sessiontoken.enable": [
+        "OAUTH_SESSIONTOKEN_ENABLE",
+        False,
+        bool,
+        None,
+    ],
 }
 
 
-process_custom_settings(sys.modules[__name__], 'OAUTH_SETTINGS_MAPPING')
+process_custom_settings(sys.modules[__name__], "OAUTH_SETTINGS_MAPPING")
 report_settings(sys.modules[__name__])

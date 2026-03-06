@@ -1,0 +1,42 @@
+---
+providers:
+  ######################################################################
+  # Google OpenID
+  - name: google
+    displayname: Google
+    url:
+      # These 3 URLs will be found using OpenID discovery, uncomment to override
+      # authorisation: https://accounts.google.com/o/oauth2/v2/auth
+      # token:  https://oauth2.googleapis.com/token
+      # userinfo: https://openidconnect.googleapis.com/v1/userinfo
+      callback: https://<OMERO_HOST>/oauth/callback/google
+
+    # https://console.developers.google.com/apis/credentials
+    client:
+      id:
+      secret:
+      scopes:
+        - openid
+        - https://www.googleapis.com/auth/userinfo.email
+        - https://www.googleapis.com/auth/userinfo.profile
+
+    openid:
+      # OpenID issuer, required for auto-discovery
+      issuer: https://accounts.google.com
+      # Uncomment to enable verification
+      # verify: true
+
+    # force to always make user click authorize
+    authorization:
+      params:
+        prompt: select_account
+
+    userinfo:
+      type: openid
+
+    user:
+      # OMERO user name, template must contain {sub}
+      name: 'google-{sub}'
+      email: '{email}'
+      firstname: '{given_name}'
+      lastname: '{family_name}'

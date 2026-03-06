@@ -29,7 +29,7 @@ Requirements
 ------------
 
 * Tested with OMERO.web 5.22.1 and Django 3.2, but OMERO.web as low as 5.18 should work.
-
+* The Dockefile in this repo builds on ``openmicroscopy/omero-web-standalone:5.29.0``
 
 Installation
 ------------
@@ -80,19 +80,23 @@ If you set ``omero.web.oauth.sessiontoken.enable=true`` users can go to https://
 Configuration Examples
 ----------------------
 
-An example provider configuration with three providers is provided, along with an example OMERO.web configuration file.
-Be sure to read the comments in the files before using them.
+The Dockerfile copies ``templates/`` into ``/opt/omero/web/config/``. Modify the provider file and
+``templates/02-oauth-config.omero`` (e.g. which provider path ``omero.web.oauth.providers`` points to) for your deployment.
 
-After editing the example files you can copy the provider configuration and apply the example omero-web configuration:
+**Keycloak (templates)**
+
+Copy the Keycloak provider config and load the OMERO config. Edit ``templates/oauth-keycloak.yaml``
+(``<OMERO_HOST>``, ``<KEYCLOAK_CLIENT_ID>``, ``<KEYCLOAK_CLIENT_SECRET>``, ``<KEYCLOAK_ISSUER>``) before use.
 
 ::
 
-    $ cp multi-example.yaml /opt/omero/web/config/oauth-providers.yaml
-    $ omero load config-example.omero
+    $ cp templates/oauth-keycloak.yaml /opt/omero/web/config/oauth-keycloak.yaml
+    $ omero load templates/02-oauth-config.omero
 
+- `oauth-keycloak.yaml <templates/oauth-keycloak.yaml>`_
+- `02-oauth-config.omero <templates/02-oauth-config.omero>`_
 
-- `Provider configuration multi-example.yaml <multi-example.yaml>`_
-- `OMERO.web configuration omeroweb-config.omero <omeroweb-config.omero>`_
+Google and ORCID provider templates are also available: ``templates/oauth-google.yaml``, ``templates/oauth-orcid.yaml``.
 
 
 Development
