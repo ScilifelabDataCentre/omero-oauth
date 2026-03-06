@@ -1,0 +1,62 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "omero-oauth"
+version = "0.1.1"
+description = "OMERO.web OAuth2 and openid-connect plugin"
+readme = "README.rst"
+requires-python = ">=3.9"
+license = { text = "AGPL-3.0" }
+authors = [
+    { name = "The Open Microscopy Team", email = "ome-devel@lists.openmicroscopy.org.uk" }
+]
+keywords = ["OMERO.web", "plugin"]
+classifiers = [
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "Topic :: Internet :: WWW/HTTP :: WSGI",
+]
+dependencies = [
+    "cryptography",
+    "jsonschema>=3,<4",
+    "pyjwt",
+    "requests_oauthlib>=1.2.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.5",
+    "pytest-cov>=6.2.1",
+    "mypy>=1.17.1",
+]
+
+[tool.pytest.ini_options]
+addopts = "--no-header -v"
+testpaths = ["tests"]
+
+[tool.coverage.run]
+source = ["omero_oauth"]
+
+[tool.coverage.report]
+skip_covered = true
+
+[tool.mypy]
+files = ["omero_oauth"]
+strict = true
+ignore_missing_imports = true
+allow_untyped_calls = true
+
+[tool.uv]
+default-groups = []
+
+[tool.setuptools]
+include-package-data = true
+zip-safe = false
