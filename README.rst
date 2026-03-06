@@ -29,7 +29,7 @@ Requirements
 ------------
 
 * Tested with OMERO.web 5.22.1 and Django 3.2, but OMERO.web as low as 5.18 should work.
-
+* The Dockefile in this repo builds on ``openmicroscopy/omero-web-standalone:5.29.0``
 
 Installation
 ------------
