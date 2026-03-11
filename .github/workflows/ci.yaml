@@ -1,0 +1,27 @@
+name: Test & Type Check
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  CI:
+    name: python
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@v7
+
+      - name: Install Python 3.9
+        run: uv python install 3.9
+
+      - name: Install dependencies
+        run: uv sync --group dev --python 3.9
+
+      - name: Run tests
+        run: uv run pytest
+
+      - name: Type check
+        run: uv run mypy omero_oauth
+
