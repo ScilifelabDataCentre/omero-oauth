@@ -43,17 +43,6 @@ class AuthException(Exception):
         super(AuthException, self).__init__(*args, **kwargs)
 
 
-def _keycloak_urls_from_issuer(issuer: str) -> Tuple[str, str, str]:
-    """Build authorization, token, userinfo URLs from a Keycloak realm issuer."""
-    base = issuer.rstrip("/")
-    prefix = "{}/protocol/openid-connect".format(base)
-    return (
-        "{}/auth".format(prefix),
-        "{}/token".format(prefix),
-        "{}/userinfo".format(prefix),
-    )
-
-
 def openid_connect_discover(issuer: str) -> Dict:
     """
     Fetch openid connect server metadata for auto-configuration.
@@ -73,12 +62,6 @@ def openid_connect_discover(issuer: str) -> Dict:
     try:
         autoconfig = _cache_get(discovery_url)
     except requests.HTTPError as e:
-        if "/realms/" in issuer and e.response is not None and e.response.status_code == 404:
-            raise AuthException(
-                "OpenID discovery failed (404) for {}. "
-                "Set url.authorisation, url.token and url.userinfo explicitly in the "
-                "provider config, or fix the issuer URL.".format(discovery_url)
-            )
         raise AuthException("OpenID discovery failed: {}".format(e))
     except requests.RequestException as e:
         raise AuthException("OpenID discovery failed: {}".format(e))
@@ -88,29 +71,23 @@ def openid_connect_discover(issuer: str) -> Dict:
 def openid_connect_urls(issuer: str) -> Tuple[str, str, str]:
     """
     Get URLs for openid connect authentication using auto-configuration.
-    For Keycloak-style issuers (containing /realms/), falls back to built-in
-    paths if discovery returns 404.
 
     Args:
-        issuer: The issuer, e.g. 'https://accounts.google.com'.
+        issuer: The issuer, e.g. 'https://accounts.google.com' or
+                'https://keycloak.example.com/realms/my-realm'.
 
     Returns:
         A tuple of (authorization, token, userinfo) URLs.
 
     Raises:
-        AuthException: If discovery fails and no Keycloak fallback applies.
+        AuthException: If discovery fails.
     """
-    try:
-        autoconfig = openid_connect_discover(issuer)
-        return (
-            autoconfig["authorization_endpoint"],
-            autoconfig["token_endpoint"],
-            autoconfig["userinfo_endpoint"],
-        )
-    except AuthException as e:
-        if "/realms/" in issuer and "404" in str(e):
-            return _keycloak_urls_from_issuer(issuer)
-        raise
+    autoconfig = openid_connect_discover(issuer)
+    return (
+        autoconfig["authorization_endpoint"],
+        autoconfig["token_endpoint"],
+        autoconfig["userinfo_endpoint"],
+    )
 
 
 def jwt_token_verify(id_token, client_id, issuer, autoconfig=None, jwk=None):
