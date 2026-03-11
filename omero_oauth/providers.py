@@ -128,29 +128,23 @@ class OauthProvider(object):
         return self._expand_all(userinfo)
 
     def userinfo_keycloak(self, token, userinfo_url):
-        # Retrieve user information from Keycloak userinfo endpoint
         response = self.oauth.get(
             userinfo_url, headers={"Authorization": f"Bearer {token}"}
         )
-
         if response.status_code != 200:
             raise OauthException(
                 f"Failed to fetch userinfo: {response.status_code} {response.text}"
             )
-
         userinfo = response.json()
-        logger.debug(f"Got Keycloak userinfo: {userinfo}")
-
-        omename = userinfo.get("preferred_username") or userinfo.get("username")
-        email = userinfo.get("email")
-        firstname = userinfo.get("given_name", "")
-        lastname = userinfo.get("family_name", "")
-
+        logger.debug("Got Keycloak userinfo %s", userinfo)
+        omename = self._expand_template("name", userinfo)
+        email = self._expand_template("email", userinfo)
+        firstname = self._expand_template("firstname", userinfo)
+        lastname = self._expand_template("lastname", userinfo)
         if not omename or not email:
             raise OauthException(
-                "Required fields 'username' or 'email' are missing from Keycloak userinfo."
+                "Required fields 'omename' or 'email' are missing from Keycloak userinfo."
             )
-
         return omename, email, firstname, lastname
 
     def userinfo_synapse(self, token, userinfo_url):
