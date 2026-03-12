@@ -96,15 +96,21 @@ def jwt_token_verify(id_token, client_id, issuer, autoconfig=None, jwk=None):
     If jwk is not provided the issuer must support auto-discovery.
     This will also slow down the login process since multiple remote calls
     are required to fetch jwk.
-    :param id_token: The openid id_token returned by the authorisation call
-    :param client_id: The client_id, required for JWT verification
-    :param issuer: The issuer, required for JWT verification and for
-                   auto-configuration if necessary
-    :param autoconfig: Dictionary of auto-configuration properties, if empty
-                       will be fetched if required
-    :param jwk: The JSON web key, if empty will be fetched using autoconfig
-    :return dict: The decoded verified token
-    :raises Exception: If verification failed
+
+    Args:
+        id_token: The openid id_token returned by the authorisation call.
+        client_id: The client_id, required for JWT verification.
+        issuer: The issuer, required for JWT verification and for
+            auto-configuration if necessary.
+        autoconfig: Dictionary of auto-configuration properties, if empty
+            will be fetched if required.
+        jwk: The JSON web key, if empty will be fetched using autoconfig.
+
+    Returns:
+        The decoded verified token (dict).
+
+    Raises:
+        Exception: If verification failed.
     """
     # https://pyjwt.readthedocs.io/en/latest/usage.html
     # https://openid.net/specs/openid-connect-core-1_0.html#IDToken
@@ -136,7 +142,11 @@ def jwt_token_verify(id_token, client_id, issuer, autoconfig=None, jwk=None):
 def jwt_token_noverify(id_token):
     """
     Decode a JWT token without verification.
-    :param id_token: The openid id_token returned by the authorisation call
-    :return dict: The decoded verified token
+
+    Args:
+        id_token: The openid id_token returned by the authorisation call.
+
+    Returns:
+        The decoded verified token (dict).
     """
     return jwt.decode(id_token, options={"verify_signature": False})

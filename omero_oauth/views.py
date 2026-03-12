@@ -27,7 +27,6 @@ USERAGENT = "OMERO.oauth"
 
 
 class OauthLoginView(WebclientLoginView):
-
     def handle_not_logged_in(self, request, error_message=None):
         auth_providers = providers()
         context = {
@@ -62,7 +61,6 @@ class OauthLoginView(WebclientLoginView):
 
 
 class OauthCallbackView(WebclientLoginView):
-
     def get(self, request, name):
         state = request.session.pop("oauth_state")
         if not state:

@@ -31,9 +31,11 @@ class OauthException(Exception):
 class OauthProvider(object):
     def __init__(self, name, **kwargs):
         """
-        Create an OAuth2Session
-        :param name: The OAuth provider name
-        :param kwargs: Additional keyword arguments passed to OAuth2Session
+        Create an OAuth2Session.
+
+        Args:
+            name: The OAuth provider name.
+            **kwargs: Additional keyword arguments passed to OAuth2Session.
         """
         self.name = name
         for item in oauth_settings.OAUTH_PROVIDERS["providers"]:

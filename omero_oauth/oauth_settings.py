@@ -36,9 +36,10 @@ def _merge_dictionaries(a, b):
 
 def oauth_provider_config(o):
     """
-    :param o: either:
-        - A JSON object containing the full OAuth provider configuration
-        - A JSON or YAML file containing a dictionary that will be merged
+    Args:
+        o: Either a JSON object containing the full OAuth provider
+            configuration, or a JSON or YAML file containing a dictionary that
+            will be merged.
     """
     try:
         cfg = json.loads(o)
