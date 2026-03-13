@@ -145,10 +145,7 @@ class OauthProvider(object):
             )
         userinfo = response.json()
         logger.debug("Got Keycloak userinfo %s", userinfo)
-        omename = self._expand_template("name", userinfo)
-        email = self._expand_template("email", userinfo)
-        firstname = self._expand_template("firstname", userinfo)
-        lastname = self._expand_template("lastname", userinfo)
+        omename, email, firstname, lastname = self._expand_all(userinfo)
         if not omename or not email:
             raise OauthException(
                 "Required user name or email could not be determined from Keycloak userinfo."
