@@ -30,8 +30,9 @@ jobs:
 
       - name: Get version from commit message
         id: get_version
+        env:
+          MSG: ${{ github.event.head_commit.message }}
         run: |
-          MSG="${{ github.event.head_commit.message }}"
           if [[ "$MSG" =~ release[[:space:]]+([0-9]+\.[0-9]+\.[0-9]+) ]]; then
             echo "version=${BASH_REMATCH[1]}" >> $GITHUB_OUTPUT
           fi
