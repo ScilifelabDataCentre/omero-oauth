@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import logging
+from typing import Any, Dict, List, Optional, Tuple, cast
 
 from django.core.exceptions import PermissionDenied
 from requests_oauthlib import OAuth2Session
@@ -13,7 +14,7 @@ logger = logging.getLogger(__name__)
 USERAGENT = "OMERO.oauth"
 
 
-def providers():
+def providers() -> List[Tuple[str, str]]:
     ps = []
     for cfg in oauth_settings.OAUTH_PROVIDERS["providers"]:
         try:
@@ -24,18 +25,21 @@ def providers():
 
 
 class OauthException(Exception):
-    def __init__(self, message):
+    def __init__(self, message: str) -> None:
         self.message = message
 
 
 class OauthProvider(object):
-    def __init__(self, name, **kwargs):
+    def __init__(self, name: str, **kwargs: Any) -> None:
         """
-        Create an OAuth2Session
-        :param name: The OAuth provider name
-        :param kwargs: Additional keyword arguments passed to OAuth2Session
+        Create an OAuth2Session.
+
+        Args:
+            name: The OAuth provider name.
+            **kwargs: Additional keyword arguments passed to OAuth2Session.
         """
         self.name = name
+        cfg: Optional[Dict[str, Any]] = None
         for item in oauth_settings.OAUTH_PROVIDERS["providers"]:
             if item["name"] == name:
                 cfg = item
@@ -51,7 +55,7 @@ class OauthProvider(object):
             **kwargs,
         )
 
-    def get(self, keypath, default=None, raise_on_missing=False):
+    def get(self, keypath: str, default: Any = None, raise_on_missing: bool = False) -> Any:
         keys = keypath.split(".")
         v = self.cfg
         for key in keys:
@@ -63,7 +67,7 @@ class OauthProvider(object):
                 return default
         return v
 
-    def set(self, keypath, value):
+    def set(self, keypath: str, value: Any) -> None:
         keys = keypath.split(".")
         v = self.cfg
         for key in keys[:-1]:
@@ -73,7 +77,7 @@ class OauthProvider(object):
                 v[key] = {}
         v[keys[-1]] = value
 
-    def _get_urls(self):
+    def _get_urls(self) -> None:
         authorization_url = self.get("url.authorisation")
         token_url = self.get("url.token")
         userinfo_url = self.get("url.userinfo")
@@ -88,72 +92,72 @@ class OauthProvider(object):
             if not userinfo_url:
                 self.set("url.userinfo", userinfo_oid)
 
-    def authorization(self):
+    def authorization(self) -> Tuple[str, str]:
         authorization_url, state = self.oauth.authorization_url(
             self.get("url.authorisation"), **self.get("authorization.params", {})
         )
         return authorization_url, state
 
-    def token(self, code):
+    def token(self, code: str) -> Dict[str, Any]:
         token = self.oauth.fetch_token(
             self.get("url.token"), client_secret=self.get("client.secret"), code=code
         )
-        return token
+        return cast(Dict[str, Any], token)
 
     # user information
 
-    def _expand_template(self, name, args):
+    def _expand_template(self, name: str, args: Dict[str, Any]) -> str:
         template = self.get("user.{}".format(name))
         # Replace None with ''
         args = dict((k, v if v is not None else "") for k, v in list(args.items()))
-        return template.format(**args)
+        return cast(str, template.format(**args))
 
-    def _expand_all(self, args):
+    def _expand_all(self, args: Dict[str, Any]) -> Tuple[str, Optional[str], str, str]:
         omename = self._expand_template("name", args)
         email = self._expand_template("email", args)
         firstname = self._expand_template("firstname", args)
         lastname = self._expand_template("lastname", args)
         return omename, email, firstname, lastname
 
-    def get_userinfo(self, token):
+    def get_userinfo(self, token: Dict[str, Any]) -> Tuple[str, Optional[str], str, str]:
         userinfo_type = self.get("userinfo.type", "default")
         f = getattr(self, "userinfo_{}".format(userinfo_type))
         userinfo_url = self.get("url.userinfo")
         userinfo = f(token, userinfo_url)
-        return userinfo
+        return cast(Tuple[str, Optional[str], str, str], userinfo)
 
-    def userinfo_default(self, token, userinfo_url):
+    def userinfo_default(
+        self, token: Dict[str, Any], userinfo_url: str
+    ) -> Tuple[str, Optional[str], str, str]:
         userinfo = self.oauth.get(userinfo_url).json()
         logger.debug("Got raw userinfo %s", userinfo)
         return self._expand_all(userinfo)
 
-    def userinfo_keycloak(self, token, userinfo_url):
-        # Retrieve user information from Keycloak userinfo endpoint
+    def userinfo_keycloak(
+        self, token: Any, userinfo_url: str
+    ) -> Tuple[str, Optional[str], str, str]:
         response = self.oauth.get(
             userinfo_url, headers={"Authorization": f"Bearer {token}"}
         )
-
         if response.status_code != 200:
             raise OauthException(
                 f"Failed to fetch userinfo: {response.status_code} {response.text}"
             )
-
         userinfo = response.json()
-        logger.debug(f"Got Keycloak userinfo: {userinfo}")
-
-        omename = userinfo.get("preferred_username") or userinfo.get("username")
-        email = userinfo.get("email")
-        firstname = userinfo.get("given_name", "")
-        lastname = userinfo.get("family_name", "")
-
+        logger.debug("Got Keycloak userinfo %s", userinfo)
+        omename = self._expand_template("name", userinfo)
+        email = self._expand_template("email", userinfo)
+        firstname = self._expand_template("firstname", userinfo)
+        lastname = self._expand_template("lastname", userinfo)
         if not omename or not email:
             raise OauthException(
-                "Required fields 'username' or 'email' are missing from Keycloak userinfo."
+                "Required fields 'omename' or 'email' are missing from Keycloak userinfo."
             )
-
         return omename, email, firstname, lastname
 
-    def userinfo_synapse(self, token, userinfo_url):
+    def userinfo_synapse(
+        self, token: Dict[str, Any], userinfo_url: str
+    ) -> Tuple[str, Optional[str], str, str]:
         decoded = jwt_token_noverify(token["id_token"])
 
         omename = decoded["user_name"]
@@ -161,14 +165,16 @@ class OauthProvider(object):
         firstname = decoded.get("given_name", "")
         lastname = decoded.get("family_name", "")
         team = decoded.get("team")
-        if len(team) == 0:
+        if not team or len(team) == 0:
             raise OauthException(
                 "Required team not found, request membership from your Synapse team manager."
             )
 
         return omename, email, firstname, lastname
 
-    def userinfo_github(self, token, userinfo_url):
+    def userinfo_github(
+        self, token: Dict[str, Any], userinfo_url: str
+    ) -> Tuple[str, Optional[str], str, str]:
         # Note userinfo_default() will work if the user's email is public
         # otherwise we need another API call:
         # https://stackoverflow.com/a/35387123/8062212
@@ -187,7 +193,9 @@ class OauthProvider(object):
             email = self._expand_template("email", userinfo)
         return omename, email, firstname, lastname
 
-    def userinfo_orcid(self, token, userinfo_url):
+    def userinfo_orcid(
+        self, token: Dict[str, Any], userinfo_url: str
+    ) -> Tuple[str, str, str, str]:
         from xml.etree import ElementTree
 
         userinfo = self.oauth.get(userinfo_url.format(**token))
@@ -198,19 +206,23 @@ class OauthProvider(object):
             "personal-details": "http://www.orcid.org/ns/personal-details",
         }
         root = ElementTree.fromstring(userinfo.text)
-        person = root.findall(".//person:person/person:name", namespaces)
-        assert len(person) == 1
-        person = person[0]
+        persons = root.findall(".//person:person/person:name", namespaces)
+        assert len(persons) == 1
+        person = persons[0]
 
         omename = self._expand_template("name", token)
         # Not available in public API
         email = ""
-        firstname = person.find("personal-details:given-names", namespaces).text
-        lastname = person.find("personal-details:family-name", namespaces).text
+        firstname_el = person.find("personal-details:given-names", namespaces)
+        lastname_el = person.find("personal-details:family-name", namespaces)
+        firstname = (firstname_el.text if firstname_el is not None else "") or ""
+        lastname = (lastname_el.text if lastname_el is not None else "") or ""
 
         return omename, email, firstname, lastname
 
-    def userinfo_openid(self, token, userinfo_url):
+    def userinfo_openid(
+        self, token: Dict[str, Any], userinfo_url: str
+    ) -> Tuple[str, Optional[str], str, str]:
         if self.get("openid.verify"):
             decoded = jwt_token_verify(
                 token["id_token"], self.get("client.id"), self.get("openid.issuer")
