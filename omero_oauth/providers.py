@@ -151,7 +151,7 @@ class OauthProvider(object):
         lastname = self._expand_template("lastname", userinfo)
         if not omename or not email:
             raise OauthException(
-                "Required fields 'omename' or 'email' are missing from Keycloak userinfo."
+                "Required user name or email could not be determined from Keycloak userinfo."
             )
         return omename, email, firstname, lastname
 
