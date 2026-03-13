@@ -29,6 +29,8 @@ dependencies = [
     "jsonschema>=3,<4",
     "pyjwt",
     "requests_oauthlib>=1.2.0",
+    "types-pyyaml>=6.0.12.20250915",
+    "types-requests>=2.32.4.20260107",
 ]
 
 [dependency-groups]
@@ -53,6 +55,7 @@ files = ["omero_oauth"]
 strict = true
 ignore_missing_imports = true
 allow_untyped_calls = true
+disable_error_code = ["attr-defined", "untyped-decorator"]
 
 [tool.uv]
 default-groups = []
