@@ -15,8 +15,8 @@ This directory contains GitHub Actions workflows used for CI, release automation
 ## Notes
 
 - `release-please.yaml` uses:
-  - config: `.github/release-please-config.main.json`
-  - manifest: `.github/.release-please-manifest.main.json`
+  - config: `.github/release-please-config.json`
+  - manifest: `.github/.release-please-manifest.json`
 - Docker images are published to GHCR (`ghcr.io/${{ github.repository }}`) by the Docker workflows.
 - Docker release image tags in `docker-release.yaml` follow this policy:
   - `main`, `main-<sha>` for integration builds from `main`
