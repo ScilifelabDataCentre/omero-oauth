@@ -1,27 +1,28 @@
 import json
 import sys
 from pkgutil import get_data
+from typing import Any, Dict, Optional, cast
 
 import yaml
 from jsonschema import Draft7Validator
 from omeroweb.settings import process_custom_settings, report_settings
 
 
-def str_not_empty(o):
+def str_not_empty(o: Any) -> str:
     s = str(o)
     if not o or not s:
         raise ValueError("Invalid empty value")
     return s
 
 
-def str_or_none(o):
+def str_or_none(o: Optional[Any]) -> Optional[str]:
     if o is not None:
         o = str(o)
     return o
 
 
 # https://github.com/jupyterhub/zero-to-jupyterhub-k8s/blob/0.8.0/images/hub/z2jh.py#L33-L47
-def _merge_dictionaries(a, b):
+def _merge_dictionaries(a: Dict[str, Any], b: Dict[str, Any]) -> Dict[str, Any]:
     merged = a.copy()
     for key in b:
         if key in a:
@@ -34,7 +35,7 @@ def _merge_dictionaries(a, b):
     return merged
 
 
-def oauth_provider_config(o):
+def oauth_provider_config(o: str) -> Dict[str, Any]:
     """
     Args:
         o: Either a JSON object containing the full OAuth provider
@@ -51,7 +52,7 @@ def oauth_provider_config(o):
             else:
                 cfg = json.load(f, Loader=yaml.FullLoader)
     schemastr = get_data("omero_oauth", "schema/provider-schema.yaml")
-    schema = yaml.load(schemastr, Loader=yaml.FullLoader)
+    schema = yaml.load(cast(bytes, schemastr), Loader=yaml.FullLoader)
     v = Draft7Validator(schema)
     if not v.is_valid(cfg):
         errs = "\n\n** ".join(
@@ -59,7 +60,7 @@ def oauth_provider_config(o):
             + ["\n\n".join(str(e) for e in v.iter_errors(cfg))]
         )
         raise ValueError(errs)
-    return cfg
+    return cast(Dict[str, Any], cfg)
 
 
 # load settings

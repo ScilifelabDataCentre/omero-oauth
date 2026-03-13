@@ -2,7 +2,7 @@ import codecs
 from datetime import datetime
 from email.utils import parsedate
 from time import mktime
-from typing import Dict, Tuple
+from typing import Any, Dict, Optional, Tuple, cast
 
 import jwt
 import requests
@@ -12,12 +12,12 @@ from cryptography.hazmat.primitives.asymmetric.rsa import RSAPublicNumbers
 from jwt.utils import base64url_decode
 
 # Cache of openid discovery responses
-_DISCOVERY_CACHE = {}
+_DISCOVERY_CACHE: Dict[str, Tuple[Dict[str, Any], float]] = {}
 # Default cache expiry time (seconds) if not in HTTP header
 _DISCOVERY_CACHE_DEFAULT_EXPIRY = 1800
 
 
-def _cache_get(url):
+def _cache_get(url: str) -> Dict[str, Any]:
     now = mktime(datetime.now().timetuple())
     try:
         obj, expiry = _DISCOVERY_CACHE[url]
@@ -31,19 +31,20 @@ def _cache_get(url):
     obj = r.json()
     httpexpiry = r.headers.get("expires")
     if httpexpiry:
-        expiry = mktime(parsedate(httpexpiry))
+        parsed = parsedate(httpexpiry)
+        expiry = mktime(parsed) if parsed is not None else now + _DISCOVERY_CACHE_DEFAULT_EXPIRY
     else:
         expiry = now + _DISCOVERY_CACHE_DEFAULT_EXPIRY
     _DISCOVERY_CACHE[url] = (obj, expiry)
-    return obj
+    return cast(Dict[str, Any], obj)
 
 
 class AuthException(Exception):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super(AuthException, self).__init__(*args, **kwargs)
 
 
-def openid_connect_discover(issuer: str) -> Dict:
+def openid_connect_discover(issuer: str) -> Dict[str, Any]:
     """
     Fetch openid connect server metadata for auto-configuration.
 
@@ -90,7 +91,13 @@ def openid_connect_urls(issuer: str) -> Tuple[str, str, str]:
     )
 
 
-def jwt_token_verify(id_token, client_id, issuer, autoconfig=None, jwk=None):
+def jwt_token_verify(
+    id_token: str,
+    client_id: str,
+    issuer: str,
+    autoconfig: Optional[Dict[str, Any]] = None,
+    jwk: Optional[Dict[str, Any]] = None,
+) -> Dict[str, Any]:
     """
     Verify a JWT token using public key.
     If jwk is not provided the issuer must support auto-discovery.
@@ -139,7 +146,7 @@ def jwt_token_verify(id_token, client_id, issuer, autoconfig=None, jwk=None):
     return d
 
 
-def jwt_token_noverify(id_token):
+def jwt_token_noverify(id_token: str) -> Dict[str, Any]:
     """
     Decode a JWT token without verification.
 
