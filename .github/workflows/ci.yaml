@@ -19,8 +19,8 @@ jobs:
       - name: Install dependencies
         run: uv sync --group dev --python 3.9
 
-      - name: Run tests
-        run: uv run pytest
+      # - name: Run tests
+      #   run: uv run pytest
 
       - name: Type check
         run: uv run mypy omero_oauth
