@@ -5,6 +5,9 @@ providers:
   - name: keycloak
     displayname: Keycloak
     url:
+      authorisation: https://<KEYCLOAK_URL>/realms/<REALM>/protocol/openid-connect/auth
+      token: https://<KEYCLOAK_URL>/realms/<REALM>/protocol/openid-connect/token
+      userinfo: https://<KEYCLOAK_URL>/realms/<REALM>/protocol/openid-connect/userinfo
       callback: https://<OMERO_HOST>/oauth/callback/keycloak
 
     # Keycloak client configuration
@@ -17,7 +20,7 @@ providers:
         - email
 
     openid:
-      issuer: https://<KEYCLOAK_ISSUER>/oauth/realms/omero/protocol/openid-connect/auth
+      issuer: https://<KEYCLOAK_URL>/realms/<REALM>
 
     userinfo:
       type: openid

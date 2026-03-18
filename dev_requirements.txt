@@ -1,4 +1,0 @@
-bump2version
-flake8
-requests_oauthlib
-#-r OMERO.py/share/web/requirements-py27-all.txt

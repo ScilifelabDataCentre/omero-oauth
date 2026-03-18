@@ -20,6 +20,6 @@ from django.apps import AppConfig
 from . import oauth_settings  # noqa
 
 
-class WebOAuthAppConfig(AppConfig):
+class WebOAuthAppConfig(AppConfig):  # type: ignore[misc]
     name = "omero_oauth"
     label = "oauth"

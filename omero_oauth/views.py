@@ -2,11 +2,12 @@
 
 import logging
 from datetime import datetime
+from typing import Any, Optional, Tuple, cast
 
 import omero
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.template import loader as template_loader
 from django.urls import reverse
 from omero.rtypes import unwrap
@@ -26,9 +27,10 @@ logger = logging.getLogger(__name__)
 USERAGENT = "OMERO.oauth"
 
 
-class OauthLoginView(WebclientLoginView):
-
-    def handle_not_logged_in(self, request, error_message=None):
+class OauthLoginView(WebclientLoginView):  # type: ignore[misc]
+    def handle_not_logged_in(
+        self, request: HttpRequest, error_message: Optional[str] = None
+    ) -> HttpResponse:
         auth_providers = providers()
         context = {
             "version": omero_version,
@@ -45,7 +47,7 @@ class OauthLoginView(WebclientLoginView):
         rsp = t.render(context, request=request)
         return HttpResponse(rsp)
 
-    def post(self, request):
+    def post(self, request: HttpRequest) -> HttpResponse:
         oauth = None
         for name, displayname in providers():
             if request.POST.get(name):
@@ -61,9 +63,8 @@ class OauthLoginView(WebclientLoginView):
         return HttpResponseRedirect(authorization_url)
 
 
-class OauthCallbackView(WebclientLoginView):
-
-    def get(self, request, name):
+class OauthCallbackView(WebclientLoginView):  # type: ignore[misc]
+    def get(self, request: HttpRequest, name: str) -> HttpResponse:
         state = request.session.pop("oauth_state")
         if not state:
             raise PermissionDenied("OAuth state missing")
@@ -84,7 +85,9 @@ class OauthCallbackView(WebclientLoginView):
         except OauthException as e:
             return error(request, error_message=e.message)
 
-    def login_with_session(self, request, session):
+    def login_with_session(
+        self, request: HttpRequest, session: str
+    ) -> HttpResponse:
         # Based on
         # https://github.com/ome/omero-web/blob/v5.22.1/omeroweb/webgateway/views.py#3421 (LoginView.post)
         username = session
@@ -122,11 +125,13 @@ class OauthCallbackView(WebclientLoginView):
             raise Exception("Failed to login with session %s", session)
         raise Exception("Incompatible server")
 
-    def post(self):
+    def post(self) -> None:
         # Disable super method
         raise PermissionDenied("POST not allowed")
 
-    def get_or_create_account_and_session(self, userinfo):
+    def get_or_create_account_and_session(
+        self, userinfo: Tuple[str, Optional[str], str, str]
+    ) -> Tuple[Any, str]:
         omename, email, firstname, lastname = userinfo
         adminc = create_admin_conn()
         try:
@@ -141,7 +146,9 @@ class OauthCallbackView(WebclientLoginView):
             adminc.close()
         return uid, session
 
-    def get_or_create_group(self, adminc, groupname=None):
+    def get_or_create_group(
+        self, adminc: Any, groupname: Optional[str] = None
+    ) -> Any:
         if not groupname:
             groupname = oauth_settings.OAUTH_GROUP_NAME
             if oauth_settings.OAUTH_GROUP_NAME_TEMPLATETIME:
@@ -162,7 +169,15 @@ class OauthCallbackView(WebclientLoginView):
             )
         return gid
 
-    def create_user(self, adminc, omename, email, firstname, lastname, groupid):
+    def create_user(
+        self,
+        adminc: Any,
+        omename: str,
+        email: Optional[str],
+        firstname: str,
+        lastname: str,
+        groupid: Any,
+    ) -> Any:
         logger.info("Creating new oauth user: %s group: %d", omename, groupid)
         uid = adminc.createExperimenter(
             omeName=omename,
@@ -178,7 +193,7 @@ class OauthCallbackView(WebclientLoginView):
         return uid
 
 
-def create_admin_conn():
+def create_admin_conn() -> Any:
     adminc = OmeroWebGateway(
         host=oauth_settings.OAUTH_HOST,
         port=oauth_settings.OAUTH_PORT,
@@ -191,7 +206,7 @@ def create_admin_conn():
     return adminc
 
 
-def create_session_for_user(adminc, omename):
+def create_session_for_user(adminc: Any, omename: str) -> str:
     # https://github.com/openmicroscopy/openmicroscopy/blob/v5.4.10/examples/OmeroClients/sudo.py
     ss = adminc.c.getSession().getSessionService()
     p = omero.sys.Principal()
@@ -206,11 +221,11 @@ def create_session_for_user(adminc, omename):
         ).getUuid()
     )
     logger.debug("Created new session: %s %s", omename, user_session)
-    return user_session
+    return cast(str, user_session)
 
 
 @render_response()
-def error(request, **kwargs):
+def error(request: HttpRequest, **kwargs: Any) -> HttpResponse:
     context = {"error_message": kwargs["error_message"]}
     t = template_loader.get_template("oauth/error.html")
     rsp = t.render(context, request=request)
@@ -219,7 +234,10 @@ def error(request, **kwargs):
 
 @login_required()
 @render_response()
-def confirm(request, conn=None, **kwargs):
+def confirm(
+    request: HttpRequest, conn: Optional[Any] = None, **kwargs: Any
+) -> HttpResponse:
+    assert conn is not None
     email = conn.getUser().getEmail()
     try:
         url = parse_url(settings.LOGIN_REDIRECT)
@@ -240,7 +258,10 @@ def confirm(request, conn=None, **kwargs):
 
 @login_required()
 @render_response()
-def sessiontoken(request, conn=None, **kwargs):
+def sessiontoken(
+    request: HttpRequest, conn: Optional[Any] = None, **kwargs: Any
+) -> HttpResponse:
+    assert conn is not None
     # createUserSession fails with a SecurityViolation
     # create session using sudo instead
     # ss = conn.c.getSession().getSessionService()

@@ -2,6 +2,7 @@ import codecs
 from datetime import datetime
 from email.utils import parsedate
 from time import mktime
+from typing import Any, Dict, Optional, Tuple, cast
 
 import jwt
 import requests
@@ -11,12 +12,12 @@ from cryptography.hazmat.primitives.asymmetric.rsa import RSAPublicNumbers
 from jwt.utils import base64url_decode
 
 # Cache of openid discovery responses
-_DISCOVERY_CACHE = {}
+_DISCOVERY_CACHE: Dict[str, Tuple[Dict[str, Any], float]] = {}
 # Default cache expiry time (seconds) if not in HTTP header
 _DISCOVERY_CACHE_DEFAULT_EXPIRY = 1800
 
 
-def _cache_get(url):
+def _cache_get(url: str) -> Dict[str, Any]:
     now = mktime(datetime.now().timetuple())
     try:
         obj, expiry = _DISCOVERY_CACHE[url]
@@ -30,38 +31,57 @@ def _cache_get(url):
     obj = r.json()
     httpexpiry = r.headers.get("expires")
     if httpexpiry:
-        expiry = mktime(parsedate(httpexpiry))
+        parsed = parsedate(httpexpiry)
+        expiry = mktime(parsed) if parsed is not None else now + _DISCOVERY_CACHE_DEFAULT_EXPIRY
     else:
         expiry = now + _DISCOVERY_CACHE_DEFAULT_EXPIRY
     _DISCOVERY_CACHE[url] = (obj, expiry)
-    return obj
+    return cast(Dict[str, Any], obj)
 
 
 class AuthException(Exception):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super(AuthException, self).__init__(*args, **kwargs)
 
 
-def openid_connect_discover(issuer):
+def openid_connect_discover(issuer: str) -> Dict[str, Any]:
     """
-    Fetch openid connect server metadata for auto-configuration
-    :param issuer: The issuer, e.g. 'https://accounts.google.com'
-    :return dict: The openid connect server information
+    Fetch openid connect server metadata for auto-configuration.
+
+    Args:
+        issuer: The issuer, e.g. 'https://accounts.google.com'.
+
+    Returns:
+        The openid connect server information.
+
+    Raises:
+        AuthException: If issuer is missing or discovery request fails.
     """
     if not issuer:
         raise AuthException("No issuer provided")
+    discovery_url = "{}/.well-known/openid-configuration".format(issuer.rstrip("/"))
     try:
-        autoconfig = _cache_get("{}/.well-known/openid-configuration".format(issuer))
-    except Exception as e:
+        autoconfig = _cache_get(discovery_url)
+    except requests.HTTPError as e:
+        raise AuthException("OpenID discovery failed: {}".format(e))
+    except requests.RequestException as e:
         raise AuthException("OpenID discovery failed: {}".format(e))
     return autoconfig
 
 
-def openid_connect_urls(issuer):
+def openid_connect_urls(issuer: str) -> Tuple[str, str, str]:
     """
-    Get URLs for openid connect authentication using auto-configuration
-    :param issuer: The issuer, e.g. 'https://accounts.google.com'
-    :return tuple: A tuple of (authorization, token, userinfo) URLs
+    Get URLs for openid connect authentication using auto-configuration.
+
+    Args:
+        issuer: The issuer, e.g. 'https://accounts.google.com' or
+                'https://keycloak.example.com/realms/my-realm'.
+
+    Returns:
+        A tuple of (authorization, token, userinfo) URLs.
+
+    Raises:
+        AuthException: If discovery fails.
     """
     autoconfig = openid_connect_discover(issuer)
     return (
@@ -71,21 +91,33 @@ def openid_connect_urls(issuer):
     )
 
 
-def jwt_token_verify(id_token, client_id, issuer, autoconfig=None, jwk=None):
+def jwt_token_verify(
+    id_token: str,
+    client_id: str,
+    issuer: str,
+    autoconfig: Optional[Dict[str, Any]] = None,
+    jwk: Optional[Dict[str, Any]] = None,
+) -> Dict[str, Any]:
     """
     Verify a JWT token using public key.
     If jwk is not provided the issuer must support auto-discovery.
     This will also slow down the login process since multiple remote calls
     are required to fetch jwk.
-    :param id_token: The openid id_token returned by the authorisation call
-    :param client_id: The client_id, required for JWT verification
-    :param issuer: The issuer, required for JWT verification and for
-                   auto-configuration if necessary
-    :param autoconfig: Dictionary of auto-configuration properties, if empty
-                       will be fetched if required
-    :param jwk: The JSON web key, if empty will be fetched using autoconfig
-    :return dict: The decoded verified token
-    :raises Exception: If verification failed
+
+    Args:
+        id_token: The openid id_token returned by the authorisation call.
+        client_id: The client_id, required for JWT verification.
+        issuer: The issuer, required for JWT verification and for
+            auto-configuration if necessary.
+        autoconfig: Dictionary of auto-configuration properties, if empty
+            will be fetched if required.
+        jwk: The JSON web key, if empty will be fetched using autoconfig.
+
+    Returns:
+        The decoded verified token (dict).
+
+    Raises:
+        Exception: If verification failed.
     """
     # https://pyjwt.readthedocs.io/en/latest/usage.html
     # https://openid.net/specs/openid-connect-core-1_0.html#IDToken
@@ -114,10 +146,14 @@ def jwt_token_verify(id_token, client_id, issuer, autoconfig=None, jwk=None):
     return d
 
 
-def jwt_token_noverify(id_token):
+def jwt_token_noverify(id_token: str) -> Dict[str, Any]:
     """
     Decode a JWT token without verification.
-    :param id_token: The openid id_token returned by the authorisation call
-    :return dict: The decoded verified token
+
+    Args:
+        id_token: The openid id_token returned by the authorisation call.
+
+    Returns:
+        The decoded verified token (dict).
     """
     return jwt.decode(id_token, options={"verify_signature": False})
