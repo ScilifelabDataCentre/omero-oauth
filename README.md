@@ -4,33 +4,30 @@
 
 1. In VM, go to omero-web docker as root and clone the repository in `/opt/omero/`
 2. Still in `/opt/omero/` activate omero CLI source `/opt/omero/web/venv3/bin/activate`
-3. Install omero-oauth `python /opt/omero/omero-oauth/setup.py install`
+3. Install omero-oauth: `cd /opt/omero/omero-oauth && python -m pip install .`
 4. Exit as root and load in docker as user
 5. Activate omero CLI
 6. Run `omero config append omero.web.apps '"omero_oauth"'`
 7. Finally, run `omero web restart`
 
-This fork contains fixes for OMERO.web >= 5.18, Django 3.2, and Python 3. Also there's
-an example configuration for Synapse OpenID Connect. <https://www.synapse.org/>
+Fork changes: OMERO.web >= 5.18, Django 3.2, and Python 3.9; provider config as JSON or YAML (schema linked below).
+New provider: Keycloak (site-specific example in `templates/oauth-keycloak.yaml`).
 
-OMERO.web application to allow OAuth2 login to OMERO.
-
-This application works by using an OMERO administrative account to implement an alternative authentication method to the standard username and password.
-Ensure you review the code and understand the consequences before using this application.
+OMERO.web OAuth2 / OpenID Connect login uses an OMERO administrative account as a bridge instead of local passwords. Review the code and implications before deploying.
 
 ![Screenshot](./docs/screenshot-keycloak.png)
 
 ## Requirements
 
 - Tested with OMERO.web 5.22.1 and Django 3.2, but OMERO.web as low as 5.18 should work.
-- The Dockefile in this repo builds on `openmicroscopy/omero-web-standalone:5.29.0`
+- The Dockerfile installs this package with `pip install .` on `openmicroscopy/omero-web-standalone:5.29.0`
 
 ## Installation
 
 This section assumes that an OMERO.web is already installed.
 
 ```bash
-python setup.py install
+python -m pip install .
 omero config append omero.web.apps '"omero_oauth"'
 ```
 
@@ -49,7 +46,7 @@ Configuration settings:
 
 OAuth2 provider settings:
 
-- `omero.web.oauth.providers`: Either a JSON object containing the full OAuth provider configuration `{ "providers:" [ ...] }`, or a file-path to the configuration file in either JSON or YAML format.
+- `omero.web.oauth.providers`: Either a JSON object with the full provider list `{ "providers": [ ... ] }`, or a filesystem path to a JSON or YAML file with the same shape.
   [See the schema for details on each field.](omero_oauth/schema/provider-schema.yaml)
 
 Restart OMERO.web in the usual way.
@@ -81,22 +78,18 @@ omero load templates/02-oauth-config.omero
 - [oauth-keycloak.yaml](templates/oauth-keycloak.yaml)
 - [02-oauth-config.omero](templates/02-oauth-config.omero)
 
-Google and ORCID provider templates are also available: `templates/oauth-google.yaml`, `templates/oauth-orcid.yaml`.
+Other templates: `templates/oauth-google.yaml`, `templates/oauth-orcid.yaml`.
 
 ## Development
 
-OAuth2 requires https to be used throughout.
-During development you can disable this by setting an environment variable `OAUTHLIB_INSECURE_TRANSPORT=1`.
+OAuth2 expects HTTPS end-to-end. For local dev, use [mkcert](https://github.com/FiloSottile/mkcert) for trusted TLS on localhost. If you must use HTTP only, set `OAUTHLIB_INSECURE_TRANSPORT=1`.
+
+Optional tooling: install dev dependencies with `uv sync --group dev` (`pytest`, `mypy`, etc.).
 
 ## Release process
 
-Use [bumpversion](https://pypi.org/project/bump2version/) to increment the version, commit and tag the repo.
-
-```bash
-bumpversion patch
-git push origin master
-git push --tags
-```
+Version bumps and changelog updates use [Release Please](https://github.com/googleapis/release-please) on `main`
+(see `.github/workflows/release-please.yaml`).
 
 ## License
 
