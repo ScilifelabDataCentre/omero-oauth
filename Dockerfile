@@ -7,7 +7,7 @@ COPY . /setup/omero-oauth
 RUN . /opt/omero/web/venv3/bin/activate && \
     python -m pip install cffi && \
     cd /setup/omero-oauth && \
-    python -m pip install --use-feature=in-tree-build .
+    python -m pip install .
 
 COPY templates/ /opt/omero/web/config/
 
