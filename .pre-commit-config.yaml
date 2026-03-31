@@ -1,0 +1,40 @@
+---
+repos:
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v4.13.9
+    hooks:
+      - id: commitizen
+        stages: [commit-msg]
+  - repo: local
+    hooks:
+      - id: prettier
+        name: prettier
+        language: system
+        entry: prettier
+        args: ["--ignore-unknown", "--write"]
+        stages: [pre-commit]
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.38.0
+    hooks:
+      - id: yamllint
+        args:
+          [
+            "-d",
+            "{extends: default, rules: {line-length: disable, trailing-spaces: {level: error}}}",
+          ]
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.5
+    hooks:
+      - id: ruff-check
+        args: ["--extend-select", "I", "--fix"]
+      - id: ruff-format
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.16.1
+    hooks:
+      - id: mypy
+        args:
+          ["--strict", "--ignore-missing-imports", "--allow-untyped-decorators"]
+        additional_dependencies:
+          - typer>=0.15.2,<0.16.0
+          - types-PyYAML
+          - types-requests
