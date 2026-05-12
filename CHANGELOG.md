@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/ScilifelabDataCentre/omero-oauth/compare/v0.3.0...v0.3.1) (2026-03-31)
+
+
+### Bug Fixes
+
+* missing pre commit ([#8](https://github.com/ScilifelabDataCentre/omero-oauth/issues/8)) ([47810f8](https://github.com/ScilifelabDataCentre/omero-oauth/commit/47810f8cb22151089a0af892e3e4b05a0e2fd12e))
+
 ## [0.3.0](https://github.com/ScilifelabDataCentre/omero-oauth/compare/v0.2.0...v0.3.0) (2026-03-18)
 
 
