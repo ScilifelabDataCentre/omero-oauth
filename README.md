@@ -1,15 +1,5 @@
 # OMERO.oauth
 
-## Installing in our omero instance
-
-1. In VM, go to omero-web docker as root and clone the repository in `/opt/omero/`
-2. Still in `/opt/omero/` activate omero CLI source `/opt/omero/web/venv3/bin/activate`
-3. Install omero-oauth: `cd /opt/omero/omero-oauth && python -m pip install .`
-4. Exit as root and load in docker as user
-5. Activate omero CLI
-6. Run `omero config append omero.web.apps '"omero_oauth"'`
-7. Finally, run `omero web restart`
-
 Fork changes: OMERO.web >= 5.18, Django 3.2, and Python 3.9; provider config as JSON or YAML (schema linked below).
 New provider: Keycloak (site-specific example in `templates/oauth-keycloak.yaml`).
 
@@ -24,11 +14,29 @@ OMERO.web OAuth2 / OpenID Connect login uses an OMERO administrative account as 
 
 ## Installation
 
-This section assumes that an OMERO.web is already installed.
+Two install paths: the GHCR image this repository publishes, or a pip install into an existing OMERO.web.
+
+### GitHub Actions image
+
+GitHub Actions publish a container image to GHCR on release. The image already contains `omero_oauth` (`pip install .` in the [Dockerfile](Dockerfile)) and copies `templates/` to `/opt/omero/web/config/`. Deploy that image as follows:
+
+1. Merge to `main`. [Release Please](.github/workflows/release-please.yaml) opens a release PR; merging it creates a GitHub release and `vX.Y.Z` tag.
+2. [docker-release.yaml](.github/workflows/docker-release.yaml) builds from `openmicroscopy/omero-web-standalone` and pushes to [`ghcr.io/scilifelabdatacentre/omero-oauth`](https://github.com/ScilifelabDataCentre/omero-oauth/pkgs/container/omero-oauth).
+3. Deploy the image:
+   - **Kubernetes:** pin the version tag in the OMERO.web Kustomize overlay (GitOps, not this repository). Deploy with `kustomize build <overlay>`.
+   - **Single image:** pull and run the same tag in place of `omero-web-standalone`, for example `docker pull ghcr.io/scilifelabdatacentre/omero-oauth:vX.Y.Z`.
+
+Release tags: `vX.Y.Z`, `X.Y.Z`, `X.Y`, `X`. Integration builds from `main` use `main` and `main-<sha>`. Pin a version tag; do not use `:latest`.
+Provider and OMERO config still come from the baked templates (see Configuration Examples).
+
+### Legacy (OMERO.web standalone)
+
+This path assumes an existing `omero-web-standalone` (or equivalent) with the OMERO.web venv sourced, for example `. /opt/omero/web/venv3/bin/activate`.
 
 ```bash
 python -m pip install .
 omero config append omero.web.apps '"omero_oauth"'
+omero web restart
 ```
 
 Configuration settings:
@@ -49,11 +57,7 @@ OAuth2 provider settings:
 - `omero.web.oauth.providers`: Either a JSON object with the full provider list `{ "providers": [ ... ] }`, or a filesystem path to a JSON or YAML file with the same shape.
   [See the schema for details on each field.](omero_oauth/schema/provider-schema.yaml)
 
-Restart OMERO.web in the usual way.
-
-```bash
-omero web restart
-```
+After a config change, roll the Deployment or recreate the container (GHCR image), or `omero web restart` (legacy).
 
 Users will be able to sign-in using OAuth at https://<OMERO_HOST>/oauth.
 
