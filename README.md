@@ -1,15 +1,20 @@
 # OMERO.oauth
 
-Fork changes: OMERO.web >= 5.18, Django 3.2, and Python 3.9; provider config as JSON or YAML (schema linked below).
-New provider: Keycloak (site-specific example in `templates/oauth-keycloak.yaml`).
-
 OMERO.web OAuth2 / OpenID Connect login uses an OMERO administrative account as a bridge instead of local passwords. Review the code and implications before deploying.
 
 ![Screenshot](./docs/screenshot-keycloak.png)
 
+## Fork changes
+
+This is a fork of [OME OMERO.oauth](https://github.com/ome/omero-oauth). Relative to upstream:
+
+- OMERO.web >= 5.29, Django 4.2, and Python 3.9
+- Provider config as YAML ([schema](omero_oauth/schema/provider-schema.yaml))
+- Keycloak provider (site-specific example in [`templates/oauth-keycloak.yaml`](templates/oauth-keycloak.yaml))
+
 ## Requirements
 
-- Tested with OMERO.web 5.22.1 and Django 3.2, but OMERO.web as low as 5.18 should work.
+- Tested with OMERO.web 5.29.0 and Django 4.2 (`Django>=4.2.3,<4.3`, from `omero-web`).
 - The Dockerfile installs this package with `pip install .` on `openmicroscopy/omero-web-standalone:5.29.0`
 
 ## Installation
