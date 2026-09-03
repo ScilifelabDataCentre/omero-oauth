@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.2](https://github.com/ScilifelabDataCentre/omero-oauth/compare/v0.3.1...v0.3.2) (2026-09-03)
+
+
+### Documentation
+
+* update readme.md ([#7](https://github.com/ScilifelabDataCentre/omero-oauth/issues/7)) ([de32d8b](https://github.com/ScilifelabDataCentre/omero-oauth/commit/de32d8b799a625a3639e31641ebc42aecb566f23))
+
 ## [0.3.1](https://github.com/ScilifelabDataCentre/omero-oauth/compare/v0.3.0...v0.3.1) (2026-03-31)
 
 
