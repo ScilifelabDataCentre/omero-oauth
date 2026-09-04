@@ -42,7 +42,7 @@ providers:
       callback: https://<OMERO_HOST>/oauth/callback/supr
 
     client:
-      id: omerotest
+      id: <SUPR_CLIENT_ID>
       secret: <SUPR_CLIENT_SECRET>
       scopes:
         - openid
