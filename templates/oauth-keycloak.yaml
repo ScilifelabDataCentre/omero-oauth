@@ -33,8 +33,8 @@ providers:
 
   ######################################################################
   # SUPR Disposer
-  - name: supr-disposer
-    displayname: SUPR Disposer
+  - name: supr
+    displayname: SUPR
     url:
       authorisation: https://disposer.c3se.chalmers.se/supr-test/openid/authorize/
       token: https://disposer.c3se.chalmers.se/supr-test/openid/token/
