@@ -54,7 +54,7 @@ providers:
       issuer: https://disposer.c3se.chalmers.se/supr-test
 
     userinfo:
-      type: default
+      type: openid
 
     user:
       name: '{username}'
