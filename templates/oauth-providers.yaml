@@ -30,3 +30,34 @@ providers:
       email: '{email}'
       firstname: '{given_name}'
       lastname: '{family_name}'
+
+  ######################################################################
+  # SUPR Disposer     
+  - name: supr
+    displayname: SUPR
+    url:
+      authorisation: https://disposer.c3se.chalmers.se/supr-test/openid/authorize/
+      token: https://disposer.c3se.chalmers.se/supr-test/openid/token/
+      userinfo: https://disposer.c3se.chalmers.se/supr-test/openid/userinfo/
+      callback: https://<OMERO_HOST>/oauth/callback/supr
+
+    client:
+      id: <SUPR_CLIENT_ID>
+      secret: <SUPR_CLIENT_SECRET>
+      scopes:
+        - openid
+        - profile
+        - email
+        - enabled-account-resource-60
+
+    openid:
+      issuer: https://disposer.c3se.chalmers.se/supr-test
+
+    userinfo:
+      type: openid
+
+    user:
+      name: '{username}'
+      email: '{email}'
+      firstname: '{given_name}'
+      lastname: '{family_name}'
