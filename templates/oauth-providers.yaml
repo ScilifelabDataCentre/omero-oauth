@@ -21,6 +21,7 @@ providers:
 
     openid:
       issuer: https://supr.naiss.se
+      verify: true
 
     userinfo:
       type: openid
