@@ -90,7 +90,7 @@ SUPR block, placeholders to fill in:
 - `<OMERO_HOST>` in the callback `https://<OMERO_HOST>/oauth/callback/supr`
 
 The SUPR URLs and issuer in the template point at the production instance
-(`https://supr.naiss.se`). The block also requests the SUPR-specific `enabled-account-resource-98` scope in addition to `openid`,`profile`, and `email`.
+(`https://supr.naiss.se`). The block also requests the SUPR-specific `enabled-account-resource-98` scope in addition to `openid`, `profile`, and `email`.
 
 Copy the provider config and load the OMERO config:
 
