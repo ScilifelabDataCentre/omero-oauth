@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.4.0](https://github.com/ScilifelabDataCentre/omero-oauth/compare/v0.3.2...v0.4.0) (2026-09-04)
+
+
+### Features
+
+* add disposer supr as identity provider ([#12](https://github.com/ScilifelabDataCentre/omero-oauth/issues/12)) ([43c9a7a](https://github.com/ScilifelabDataCentre/omero-oauth/commit/43c9a7ae0a2b5027cf76482cfffad738f1e8eb85))
+
+## [0.3.2](https://github.com/ScilifelabDataCentre/omero-oauth/compare/v0.3.1...v0.3.2) (2026-09-03)
+
+
+### Documentation
+
+* update readme.md ([#7](https://github.com/ScilifelabDataCentre/omero-oauth/issues/7)) ([de32d8b](https://github.com/ScilifelabDataCentre/omero-oauth/commit/de32d8b799a625a3639e31641ebc42aecb566f23))
+
+## [0.3.1](https://github.com/ScilifelabDataCentre/omero-oauth/compare/v0.3.0...v0.3.1) (2026-03-31)
+
+
+### Bug Fixes
+
+* missing pre commit ([#8](https://github.com/ScilifelabDataCentre/omero-oauth/issues/8)) ([47810f8](https://github.com/ScilifelabDataCentre/omero-oauth/commit/47810f8cb22151089a0af892e3e4b05a0e2fd12e))
+
 ## [0.3.0](https://github.com/ScilifelabDataCentre/omero-oauth/compare/v0.2.0...v0.3.0) (2026-03-18)
 
 
