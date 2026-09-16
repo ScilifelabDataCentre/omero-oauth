@@ -97,7 +97,7 @@ class OauthProvider(object):
     def authorization(self) -> Tuple[str, str]:
         params = dict(self.get("authorization.params", {}) or {})
         if "openid" in (self.get("client.scopes") or []):
-            params.setdefault("nonce", secrets.token_urlsafe(32))
+            params["nonce"] = secrets.token_urlsafe(32)
         self.nonce = params.get("nonce")
         authorization_url, state = self.oauth.authorization_url(
             self.get("url.authorisation"), **params
