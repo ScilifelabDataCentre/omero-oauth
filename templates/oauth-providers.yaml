@@ -1,44 +1,13 @@
 ---
 providers:
   ######################################################################
-  # Keycloak
-  - name: keycloak
-    displayname: Keycloak
-    url:
-      authorisation: https://<KEYCLOAK_URL>/realms/<REALM>/protocol/openid-connect/auth
-      token: https://<KEYCLOAK_URL>/realms/<REALM>/protocol/openid-connect/token
-      userinfo: https://<KEYCLOAK_URL>/realms/<REALM>/protocol/openid-connect/userinfo
-      callback: https://<OMERO_HOST>/oauth/callback/keycloak
-
-    # Keycloak client configuration
-    client:
-      id: <KEYCLOAK_CLIENT_ID>
-      secret: <KEYCLOAK_CLIENT_SECRET>
-      scopes:
-        - openid
-        - profile
-        - email
-
-    openid:
-      issuer: https://<KEYCLOAK_URL>/realms/<REALM>
-
-    userinfo:
-      type: openid
-
-    user:
-      name: '{preferred_username}'
-      email: '{email}'
-      firstname: '{given_name}'
-      lastname: '{family_name}'
-
-  ######################################################################
-  # SUPR Disposer     
+  # SUPR
   - name: supr
     displayname: SUPR
     url:
-      authorisation: https://disposer.c3se.chalmers.se/supr-test/openid/authorize/
-      token: https://disposer.c3se.chalmers.se/supr-test/openid/token/
-      userinfo: https://disposer.c3se.chalmers.se/supr-test/openid/userinfo/
+      authorisation: https://supr.naiss.se/openid/authorize/
+      token: https://supr.naiss.se/openid/token/
+      userinfo: https://supr.naiss.se/openid/userinfo/
       callback: https://<OMERO_HOST>/oauth/callback/supr
 
     client:
@@ -48,10 +17,10 @@ providers:
         - openid
         - profile
         - email
-        - enabled-account-resource-60
+        - enabled-account-resource-98
 
     openid:
-      issuer: https://disposer.c3se.chalmers.se/supr-test
+      issuer: https://supr.naiss.se
 
     userinfo:
       type: openid
