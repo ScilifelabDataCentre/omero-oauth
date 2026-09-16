@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import hmac
 import logging
 from datetime import datetime
 from typing import Any, Optional, Tuple, cast
@@ -69,6 +70,11 @@ class OauthCallbackView(WebclientLoginView):  # type: ignore[misc]
     def get(self, request: HttpRequest, name: str) -> HttpResponse:
         state = request.session.pop("oauth_state", None)
         nonce = request.session.pop("oauth_nonce", None)
+        returned_state = request.GET.get("state")
+        if not state or not returned_state:
+            raise PermissionDenied("OAuth state missing")
+        if not hmac.compare_digest(state, returned_state):
+            raise PermissionDenied("OAuth state mismatch")
         if request.GET.get("error"):
             return error(
                 request,
@@ -76,8 +82,6 @@ class OauthCallbackView(WebclientLoginView):  # type: ignore[misc]
                     request.GET["error"], request.GET.get("error_description", "")
                 ),
             )
-        if not state:
-            raise PermissionDenied("OAuth state missing")
         code = request.GET.get("code")
         if not code:
             raise PermissionDenied("OAuth code missing")
