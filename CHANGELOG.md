@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/ScilifelabDataCentre/omero-oauth/compare/v0.3.2...v0.4.0) (2026-09-04)
+
+
+### Features
+
+* add disposer supr as identity provider ([#12](https://github.com/ScilifelabDataCentre/omero-oauth/issues/12)) ([43c9a7a](https://github.com/ScilifelabDataCentre/omero-oauth/commit/43c9a7ae0a2b5027cf76482cfffad738f1e8eb85))
+
 ## [0.3.2](https://github.com/ScilifelabDataCentre/omero-oauth/compare/v0.3.1...v0.3.2) (2026-09-03)
 
 
