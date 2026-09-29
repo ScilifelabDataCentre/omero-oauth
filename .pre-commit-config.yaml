@@ -29,7 +29,7 @@ repos:
         args: ["--extend-select", "I", "--fix"]
       - id: ruff-format
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.16.1
+    rev: v1.17.1
     hooks:
       - id: mypy
         args:
@@ -38,3 +38,8 @@ repos:
           - typer>=0.15.2,<0.16.0
           - types-PyYAML
           - types-requests
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v4.13.9
+    hooks:
+      - id: commitizen
+        stages: [commit-msg]
