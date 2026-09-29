@@ -75,7 +75,7 @@ def openid_connect_urls(issuer: str) -> Tuple[str, str, str]:
 
     Args:
         issuer: The issuer, e.g. 'https://accounts.google.com' or
-                'https://keycloak.example.com/realms/my-realm'.
+                'https://supr.naiss.se'.
 
     Returns:
         A tuple of (authorization, token, userinfo) URLs.

@@ -2,7 +2,9 @@
 
 OMERO.web OAuth2 / OpenID Connect login uses an OMERO administrative account as a bridge instead of local passwords. Review the code and implications before deploying.
 
-![Screenshot](./docs/screenshot-keycloak.png)
+![Screenshot of the OMERO.web login page with OAuth login buttons](./docs/screenshot-supr.png)
+
+The login page shows one button per configured provider; the example above has one provider enabled (SUPR).
 
 ## Fork changes
 
@@ -10,7 +12,7 @@ This is a fork of [OME OMERO.oauth](https://github.com/ome/omero-oauth). Relativ
 
 - OMERO.web >= 5.29, Django 4.2, and Python 3.9
 - Provider config as YAML ([schema](omero_oauth/schema/provider-schema.yaml))
-- Keycloak provider (site-specific example in [`templates/oauth-keycloak.yaml`](templates/oauth-keycloak.yaml))
+- SUPR provider (site-specific example in [`templates/oauth-providers.yaml`](templates/oauth-providers.yaml))
 
 ## Requirements
 
@@ -74,17 +76,30 @@ If you set `omero.web.oauth.sessiontoken.enable=true` users can go to https://<O
 The Dockerfile copies `templates/` into `/opt/omero/web/config/`. Modify the provider file and
 `templates/02-oauth-config.omero` (e.g. which provider path `omero.web.oauth.providers` points to) for your deployment.
 
-### Keycloak (templates)
+### Providers (templates)
 
-Copy the Keycloak provider config and load the OMERO config. Edit `templates/oauth-keycloak.yaml`
-(`<OMERO_HOST>`, `<KEYCLOAK_CLIENT_ID>`, `<KEYCLOAK_CLIENT_SECRET>`, `<KEYCLOAK_ISSUER>`) before use.
+`templates/02-oauth-config.omero` sets `omero.web.oauth.providers` to
+`/opt/omero/web/config/oauth-providers.yaml`, so `templates/oauth-providers.yaml` is the file the image loads.
+
+The login page shows a button for every entry under `providers`. The template ships one OpenID Connect
+provider, SUPR; add further blocks under `providers` if you need more.
+
+SUPR block, placeholders to fill in:
+
+- `<SUPR_CLIENT_ID>`, `<SUPR_CLIENT_SECRET>`
+- `<OMERO_HOST>` in the callback `https://<OMERO_HOST>/oauth/callback/supr`
+
+The SUPR URLs and issuer in the template point at the production instance
+(`https://supr.naiss.se`). The block also requests the SUPR-specific `enabled-account-resource-98` scope in addition to `openid`, `profile`, and `email`.
+
+Copy the provider config and load the OMERO config:
 
 ```bash
-cp templates/oauth-keycloak.yaml /opt/omero/web/config/oauth-keycloak.yaml
+cp templates/oauth-providers.yaml /opt/omero/web/config/oauth-providers.yaml
 omero load templates/02-oauth-config.omero
 ```
 
-- [oauth-keycloak.yaml](templates/oauth-keycloak.yaml)
+- [oauth-providers.yaml](templates/oauth-providers.yaml)
 - [02-oauth-config.omero](templates/02-oauth-config.omero)
 
 Other templates: `templates/oauth-google.yaml`, `templates/oauth-orcid.yaml`.
