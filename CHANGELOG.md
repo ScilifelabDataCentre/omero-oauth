@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.5.0](https://github.com/ScilifelabDataCentre/omero-oauth/compare/v0.4.0...v0.5.0) (2026-09-29)
+
+
+### Features
+
+* add SUPR as the OAuth identity provider and drop Keycloak ([#14](https://github.com/ScilifelabDataCentre/omero-oauth/issues/14)) ([4be0bd0](https://github.com/ScilifelabDataCentre/omero-oauth/commit/4be0bd0651c18d406a15b6f1511d94197811c911))
+
+
+### Bug Fixes
+
+* missing pre commit hooks ([#10](https://github.com/ScilifelabDataCentre/omero-oauth/issues/10)) ([218f72c](https://github.com/ScilifelabDataCentre/omero-oauth/commit/218f72ca95773505bfe5028ce31751b579537796))
+
 ## [0.4.0](https://github.com/ScilifelabDataCentre/omero-oauth/compare/v0.3.2...v0.4.0) (2026-09-04)
 
 
