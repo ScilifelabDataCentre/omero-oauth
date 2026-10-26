@@ -1,0 +1,10 @@
+# OMERO.openlink: public download links (NOR-648)
+config append omero.web.apps '"omero_openlink"'
+config append omero.web.ui.right_plugins '["OpenLink", "omero_openlink/webclient_plugins/right_plugin.openlink.js.html", "openlink_tab"]'
+
+config set omero.web.openlink.dir /OMERO/openlink
+config set omero.web.openlink.type_http https
+config set omero.web.openlink.nginx_location /openlink
+
+# omero.web.openlink.servername is NOT set here: each environment sets it
+# with the CONFIG_omero_web_openlink_servername environment variable.
