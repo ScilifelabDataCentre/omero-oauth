@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.6.0](https://github.com/ScilifelabDataCentre/omero-oauth/compare/v0.5.0...v0.6.0) (2026-11-02)
+
+
+### Features
+
+* add omero-openlink dependency to Dockerfile for enhanced functionality ([a7ce94a](https://github.com/ScilifelabDataCentre/omero-oauth/commit/a7ce94abc3d3350224b8412b4da619e5de43085f))
+* add OMERO.openlink configuration for public download links (NOR-648) ([9d8dfbf](https://github.com/ScilifelabDataCentre/omero-oauth/commit/9d8dfbf23376c7387955dfda84bd15798b7125b3))
+* add openlink ([eb0ea03](https://github.com/ScilifelabDataCentre/omero-oauth/commit/eb0ea0381b8c1059c80fe488aded87894eaa0eb5))
+
 ## [0.5.0](https://github.com/ScilifelabDataCentre/omero-oauth/compare/v0.4.0...v0.5.0) (2026-09-29)
 
 
