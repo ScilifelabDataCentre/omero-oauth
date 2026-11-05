@@ -7,7 +7,7 @@ name = "omero-oauth"
 version = "0.6.0"
 description = "OMERO.web OAuth2 and openid-connect plugin"
 readme = "README.rst"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = "AGPL-3.0"
 authors = [
     { name = "The Open Microscopy Team", email = "ome-devel@lists.openmicroscopy.org.uk" }
