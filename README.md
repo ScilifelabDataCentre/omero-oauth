@@ -10,14 +10,14 @@ The login page shows one button per configured provider; the example above has o
 
 This is a fork of [OME OMERO.oauth](https://github.com/ome/omero-oauth). Relative to upstream:
 
-- OMERO.web >= 5.29, Django 4.2, and Python 3.9
+- OMERO.web >= 5.33, Django 5.2, and Python >= 3.10
 - Provider config as YAML ([schema](omero_oauth/schema/provider-schema.yaml))
 - SUPR provider (site-specific example in [`templates/oauth-providers.yaml`](templates/oauth-providers.yaml))
 
 ## Requirements
 
-- Tested with OMERO.web 5.29.0 and Django 4.2 (`Django>=4.2.3,<4.3`, from `omero-web`).
-- The Dockerfile installs this package with `pip install .` on `openmicroscopy/omero-web-standalone:5.29.0`
+- Tested with OMERO.web 5.33.3 and Django 5.2 (`Django>=5.2.9,<5.3`, from `omero-web`).
+- The Dockerfile installs this package with `pip install .` on `openmicroscopy/omero-web-standalone:5.33.3`
 
 ## Installation
 
